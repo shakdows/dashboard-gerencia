@@ -3,89 +3,143 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Gerente Nivel Dios 🚀</title>
+  <title>Peru Tractor - Dashboard Gerencial</title>
   <script src="https://www.gstatic.com/charts/loader.js"></script>
 
   <style>
+    /* PALETA CORPORATIVA PERU TRACTOR (TEMA INDUSTRIAL) */
     :root {
-      --primary: #0f172a; --secondary: #3b82f6; --bg: #f8fafc; --card-bg: #ffffff;
-      --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0;
+      --primary: #111827; 
+      --secondary: #f59e0b; 
+      --secondary-hover: #d97706; 
+      --bg: #f4f6f8; 
+      --card-bg: #ffffff;
+      --text-main: #1f2937; 
+      --text-muted: #64748b; 
+      --border: #e2e8f0;
     }
+    
     body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); padding: 15px; margin: 0; font-size: 13px; }
     h1, h2, h3 { margin: 0; }
-    h1 { color: var(--primary); font-size: 24px;}
+    h1 { color: var(--primary); font-size: 24px; font-weight: 800; text-transform: uppercase;}
     
-    .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+    /* ANIMACIÓN DE INICIO (SPLASH SCREEN) */
+    #splash-screen {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+    }
+    #splash-screen img {
+      max-width: 350px;
+      animation: pulseLogo 1.5s infinite alternate;
+    }
+    #splash-screen h2 {
+      margin-top: 20px; color: var(--primary); font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
+    }
+    @keyframes pulseLogo {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.05); }
+    }
+    .hidden-splash {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);}
     
-    .sync-badge { background: #dcfce7; color: #16a34a; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; border: 1px solid #bbf7d0; display: flex; align-items: center; gap: 5px; }
-    .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 14px; height: 14px; animation: spin 1s linear infinite; display: none; }
+    .brand-logo-container { display: flex; align-items: center; gap: 15px; }
+    .brand-logo { height: 50px; object-fit: contain; } 
+
+    button { background: var(--secondary); color: #111827; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; transition: 0.3s; }
+    button:hover { background: var(--secondary-hover); color: white; }
+    button:disabled { background: #cbd5e1; color: #64748b; cursor: not-allowed; }
+    
+    .sync-badge { background: #fef3c7; color: #ca8a04; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; border: 1px solid #fde047; display: flex; align-items: center; gap: 5px; }
+    .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--secondary); border-radius: 50%; width: 14px; height: 14px; animation: spin 1s linear infinite; display: none; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    .manager-box { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 15px 20px; border-radius: 10px; display: flex; gap: 15px; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .manager-box-purchasing { background: linear-gradient(135deg, #064e3b, #022c22); }
+    .manager-box { background: linear-gradient(135deg, #111827, #1f2937); color: white; padding: 15px 20px; border-radius: 10px; display: flex; gap: 15px; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); border-left: 5px solid var(--secondary);}
+    .manager-box-purchasing { background: linear-gradient(135deg, #1e293b, #334155); border-left: 5px solid #10b981; }
     .manager-avatar { font-size: 40px; }
     .manager-text { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden;}
-    .manager-text h3 { color: #60a5fa; margin-bottom: 5px; font-size: 16px; }
+    .manager-text h3 { color: var(--secondary); margin-bottom: 5px; font-size: 16px; text-transform: uppercase; font-weight: 800;}
     .manager-box-purchasing .manager-text h3 { color: #34d399; }
     
     .carousel-container { display: flex; align-items: center; gap: 10px; width: 100%;}
     .carousel-btn { background: rgba(255,255,255,0.1); border: none; color: white; font-size: 16px; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; padding:0; flex-shrink: 0;}
-    .carousel-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
+    .carousel-btn:hover { background: var(--secondary); color: #111827; transform: scale(1.1); }
     .carousel-content { flex: 1; font-size: 14px; line-height: 1.5; color: #cbd5e1; min-height: 42px; display: flex; align-items: center;}
     
     .carousel-indicators { display: flex; justify-content: center; gap: 5px; margin-top: 8px; }
     .dot { width: 8px; height: 8px; background: rgba(255,255,255,0.2); border-radius: 50%; cursor: pointer; transition: 0.3s;}
-    .dot.active { background: #60a5fa; transform: scale(1.2); }
+    .dot.active { background: var(--secondary); transform: scale(1.2); }
     .manager-box-purchasing .dot.active { background: #34d399; }
-    .highlight { color: #fbbf24; font-weight: bold; }
+    .highlight { color: #fcd34d; font-weight: bold; }
 
-    .filters-bar { background: var(--card-bg); padding: 15px; border-radius: 8px; display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); align-items: center; }
-    .filters-bar select, .filters-bar input { padding: 8px; border: 1px solid var(--border); border-radius: 5px; font-size: 13px; min-width: 140px; }
+    .filters-bar { background: var(--card-bg); padding: 15px; border-radius: 8px; display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); align-items: center; border-top: 3px solid var(--secondary);}
+    .filters-bar select, .filters-bar input { padding: 8px; border: 1px solid var(--border); border-radius: 5px; font-size: 13px; min-width: 140px; outline: none;}
+    .filters-bar select:focus, .filters-bar input:focus { border-color: var(--secondary); }
     
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 20px; }
     .grid-large { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 15px; margin-bottom: 20px; }
     .card { background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;}
-    .card h2 { font-size: 16px; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-bottom: 10px; }
+    .card h2 { font-size: 15px; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-bottom: 10px; font-weight: 800; text-transform: uppercase;}
     
     .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 15px; }
-    .kpi { background: #f1f5f9; padding: 15px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.05); position:relative;}
-    .kpi h3 { font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px;}
-    .kpi p { font-size: 20px; font-weight: bold; margin: 0; color: var(--primary); }
+    .kpi { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.05); position:relative;}
+    .kpi h3 { font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; font-weight: bold;}
+    .kpi p { font-size: 20px; font-weight: 900; margin: 0; color: var(--primary); }
 
-    .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-height: 400px; }
-    thead { position: sticky; top: 0; z-index: 2; background: #e2e8f0; }
+    .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-height: 400px; border: 1px solid var(--border);}
+    thead { position: sticky; top: 0; z-index: 2; background: #f1f5f9; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
     table { width: 100%; border-collapse: collapse; font-size: 11px; }
     th, td { border-bottom: 1px solid var(--border); padding: 8px 10px; text-align: left; }
-    th { color: var(--text-main); font-weight: 600; text-transform: uppercase; font-size: 10px; background: #f8fafc;}
+    th { color: var(--primary); font-weight: 800; text-transform: uppercase; font-size: 10px; }
     
     .row-clickable { cursor: pointer; transition: 0.2s; }
-    .row-clickable:hover { background-color: #e0e7ff !important; box-shadow: inset 4px 0 0 #3b82f6; }
+    .row-clickable:hover { background-color: #fef3c7 !important; }
     
     .center { text-align: center; } .right { text-align: right; }
-    .text-green { color: #16a34a !important; font-weight: bold; } .text-red { color: #dc2626 !important; font-weight: bold; } .text-blue { color: #2563eb !important; font-weight: bold;}
+    .text-green { color: #16a34a !important; font-weight: bold; } .text-red { color: #dc2626 !important; font-weight: bold; } .text-blue { color: #1d4ed8 !important; font-weight: bold;}
     
-    .badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; display: inline-block;}
-    .semaforo-verde { background: #22c55e !important; color: white !important; }
-    .semaforo-amarillo { background: #eab308 !important; color: black !important; }
+    .badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; display: inline-block;}
+    .semaforo-verde { background: #10b981 !important; color: white !important; }
+    .semaforo-amarillo { background: var(--secondary) !important; color: #111827 !important; }
     .semaforo-rojo { background: #ef4444 !important; color: white !important; }
-    .badge-gray { background: #f1f5f9; color: #475569; }
+    .badge-gray { background: #e2e8f0; color: #475569; }
 
-    .popup-panel { display: none; border: 2px solid #3b82f6; animation: slideIn 0.3s ease-out; background: #f8fafc; margin-bottom:20px;}
+    .popup-panel { display: none; border: 2px solid var(--secondary); animation: slideIn 0.3s ease-out; background: #ffffff; margin-bottom:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);}
     @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
     .matrix-cell { text-align: center; font-weight: bold; border-right: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s;}
     .matrix-cell:hover { transform: scale(1.05); box-shadow: 0 0 5px rgba(0,0,0,0.2); }
-    .qty-high { background: #dbeafe; color: #1e3a8a; } .qty-mid { background: #f1f5f9; color: #475569; }
+    .qty-high { background: #fef3c7; color: #b45309; } .qty-mid { background: #f8fafc; color: #475569; }
     
-    #table-loader { text-align:center; padding: 20px; color: #3b82f6; font-weight:bold; display:none; }
-    .price-insight-box { background: #ecfdf5; border-left: 4px solid #10b981; padding: 10px 15px; border-radius: 0 6px 6px 0; margin-bottom: 15px; color: #064e3b; font-size: 13px;}
+    #table-loader { text-align:center; padding: 20px; color: var(--primary); font-weight:bold; display:none; }
+    .price-insight-box { background: #fef3c7; border-left: 4px solid var(--secondary); padding: 10px 15px; border-radius: 0 6px 6px 0; margin-bottom: 15px; color: #b45309; font-size: 13px;}
   </style>
 </head>
 <body>
 
+<!-- PANTALLA DE CARGA (SPLASH SCREEN) -->
+<div id="splash-screen">
+  <img src="https://perutractor.com/wp-content/uploads/2025/08/LOGO-PERU-TRACTOR-NEGRO.png" alt="Peru Tractor Logo">
+  <h2>Iniciando Sistema Gerencial...</h2>
+</div>
+
 <div class="header-container">
-  <div>
-    <h1>Dashboard Nivel Dios 🚀</h1>
+  <div class="brand-logo-container">
+    <img src="https://perutractor.com/wp-content/uploads/2025/08/LOGO-PERU-TRACTOR-NEGRO.png" alt="Peru Tractor Logo" class="brand-logo" id="company-logo">
+    <div>
+      <h1>Panel de Gerencia</h1>
+      <div style="font-size: 11px; color: var(--text-muted); font-weight: bold;" id="update-status">Cargando sistema...</div>
+    </div>
   </div>
   <div>
     <div class="sync-badge" id="syncStatus">
@@ -111,7 +165,7 @@
 
 <!-- FILTROS GLOBALES -->
 <div class="filters-bar">
-  <strong>Filtros:</strong>
+  <strong style="color: var(--primary); text-transform: uppercase;">Filtros:</strong>
   <input type="text" id="fSearch" placeholder="🔍 Buscar SKU o Marca..." oninput="applyFilters()">
   <select id="fAnio" onchange="applyFilters()"><option value="">Todos los Años</option></select>
   <select id="fMes" onchange="applyFilters()">
@@ -130,9 +184,9 @@
 <div class="card">
   <h2>Estado de Resultados (Resumen Financiero)</h2>
   <div class="kpis">
-    <div class="kpi" style="border-left: 4px solid #3b82f6;">
+    <div class="kpi" style="border-left: 4px solid var(--primary);">
       <h3 title="Todo el dinero que ingresó por ventas">1. Ingresos (Ventas)</h3>
-      <p id="kpiVentas" class="text-blue">$0.00</p>
+      <p id="kpiVentas" class="text-main">$0.00</p>
     </div>
     <div class="kpi" style="border-left: 4px solid #ef4444;">
       <h3 title="Cuánto nos costó originalmente lo que ya vendimos">2. Costo de lo Vendido</h3>
@@ -142,9 +196,9 @@
       <h3 title="Resta de Ingresos menos Costo (Dinero limpio)">3. Ganancia Real (1 menos 2)</h3>
       <p id="kpiMargen" class="text-green">$0.00</p>
     </div>
-    <div class="kpi" style="background: #fffbeb; border-color: #f59e0b; border-left: 4px solid #f59e0b;">
+    <div class="kpi" style="background: #fffbeb; border-color: var(--secondary); border-left: 4px solid var(--secondary);">
       <h3 title="Dinero gastado en comprar mercadería para el almacén">Inversión en Almacén (Stock)</h3>
-      <p id="kpiCompras">$0.00</p>
+      <p id="kpiCompras" style="color: #b45309;">$0.00</p>
     </div>
     <div class="kpi" style="background: #fef2f2; border-color: #ef4444; border-left: 4px solid #ef4444;">
       <h3 title="Dinero perdido por aplicar descuentos debajo del factor estratégico">🚨 Fuga de Ganancias</h3>
@@ -179,13 +233,13 @@
   </div>
 </div>
 
-<div id="table-loader">Procesando miles de registros para las tablas... ⏳</div>
+<div id="table-loader">Procesando registros de maquinaria y repuestos... ⏳</div>
 
 <!-- PANEL DETALLE DÍA POR DÍA DE VENTAS -->
 <div class="card popup-panel" id="detailPanel">
   <div class="header-container" style="border-bottom: 1px solid #cbd5e1; padding-bottom: 10px;">
-    <h2 id="detailTitle" style="color: #1e3a8a;">🔍 Historial Diario de: [SKU]</h2>
-    <button style="background: #ef4444; border:none; padding: 5px 10px; border-radius: 4px; color:white; font-weight:bold; cursor:pointer;" onclick="document.getElementById('detailPanel').style.display='none'">X Cerrar Panel</button>
+    <h2 id="detailTitle" style="color: var(--primary);">🔍 Historial Diario de: [SKU]</h2>
+    <button style="background: #ef4444; color:white;" onclick="document.getElementById('detailPanel').style.display='none'">X Cerrar</button>
   </div>
   <div class="table-container" style="max-height: 250px; margin-top: 10px; box-shadow: none; border: 1px solid #cbd5e1;">
     <table>
@@ -203,7 +257,7 @@
   <div class="table-container">
     <table>
       <thead>
-        <tr><th>Código</th><th>Marca</th><th class="center" style="background:#eef2ff;">P. Compra<br>Promedio (Sin IGV)</th><th class="center" style="background:#fefce8;">Factor<br>Esperado</th><th class="center" style="background:#eef2ff;">P. Sugerido<br>(Meta)</th><th class="center" style="background:#f0fdf4;">P. Venta<br>Real Prom.</th><th class="center">Estado<br>Margen</th><th class="right">Ventas ($)</th><th class="right">Ganancia ($)</th><th class="center">Diagnóstico</th></tr>
+        <tr><th>Código</th><th>Marca</th><th class="center" style="background:#f8fafc;">P. Compra<br>Promedio (Sin IGV)</th><th class="center" style="background:#fefce8;">Factor<br>Esperado</th><th class="center" style="background:#f8fafc;">P. Sugerido<br>(Meta)</th><th class="center" style="background:#f0fdf4;">P. Venta<br>Real Prom.</th><th class="center">Estado<br>Margen</th><th class="right">Ventas ($)</th><th class="right">Ganancia ($)</th><th class="center">Diagnóstico</th></tr>
       </thead>
       <tbody id="tablaMain"></tbody>
     </table>
@@ -227,8 +281,8 @@
 <!-- PANEL DETALLE DE PRECIOS PROVEEDOR -->
 <div class="card popup-panel" id="priceDetailPanel">
   <div class="header-container" style="border-bottom: 1px solid #cbd5e1; padding-bottom: 10px;">
-    <h2 id="priceDetailTitle" style="color: #064e3b;">💸 Análisis de Costo Local: [SKU] - [PROV]</h2>
-    <button style="background: #ef4444; border:none; padding: 5px 10px; border-radius: 4px; color:white; font-weight:bold; cursor:pointer;" onclick="document.getElementById('priceDetailPanel').style.display='none'">X Cerrar Panel</button>
+    <h2 id="priceDetailTitle" style="color: var(--primary);">💸 Análisis de Costo Local: [SKU] - [PROV]</h2>
+    <button style="background: #ef4444; color:white;" onclick="document.getElementById('priceDetailPanel').style.display='none'">X Cerrar</button>
   </div>
   <div class="price-insight-box" id="priceAiInsight">Cargando análisis histórico...</div>
   <div id="priceHistoryChart" style="height: 180px; width: 100%; margin-bottom: 15px;"></div>
@@ -243,8 +297,8 @@
 <!-- PANEL DETALLE DESTINO CLIENTES -->
 <div class="card popup-panel" id="clientDetailPanel">
   <div class="header-container" style="border-bottom: 1px solid #cbd5e1; padding-bottom: 10px;">
-    <h2 id="clientDetailTitle" style="color: #1e3a8a;">📦 Destino de la mercadería: [SKU]</h2>
-    <button style="background: #ef4444; border:none; padding: 5px 10px; border-radius: 4px; color:white; font-weight:bold; cursor:pointer;" onclick="document.getElementById('clientDetailPanel').style.display='none'">X Cerrar Panel</button>
+    <h2 id="clientDetailTitle" style="color: var(--primary);">📦 Destino de la mercadería: [SKU]</h2>
+    <button style="background: #ef4444; color:white;" onclick="document.getElementById('clientDetailPanel').style.display='none'">X Cerrar</button>
   </div>
   <div class="table-container" style="max-height: 250px; margin-top: 10px; box-shadow: none; border: 1px solid #cbd5e1;">
     <table>
@@ -256,24 +310,30 @@
 
 <div class="grid" style="grid-template-columns: 1fr;">
   <div class="card">
-    <h2>Matriz de Adquisición (Cantidades compradas) <i>*Clic en el Total para ver a qué Clientes se vendió*</i></h2>
+    <h2>Matriz de Adquisición (Cantidades compradas) <i>*Clic en el Total para ver Clientes*</i></h2>
     <div class="table-container"><table id="matrixQty"></table></div>
   </div>
   <div class="card">
-    <h2>Matriz de Precios (Último Costo) <i>*Clic en un precio para analizar la estacionalidad del proveedor*</i></h2>
+    <h2>Matriz de Precios (Último Costo) <i>*Clic en un precio para analizar historial*</i></h2>
     <div class="table-container"><table id="matrixPrice"></table></div>
   </div>
 </div>
 
 <script>
-// AQUI ESTA TU API EXACTA DE GOOGLE APPS SCRIPT
+// QUITAR EL SPLASH SCREEN DESPUÉS DE 2 SEGUNDOS
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('splash-screen').classList.add('hidden-splash');
+  }, 2000); 
+});
+
+// TU API DE GOOGLE
 const API_URL = "https://script.google.com/macros/s/AKfycbxj0cSk26mWhP6_UXMOGaGp6Fv7txzcg0VXx6ligPORP5pmUu2KdJGbpdT8q0iO1GZTJQ/exec";
 
 let allData = [];
 let filteredData = [];
 let filterOptions = {};
 
-// Variables de IA Carrusel
 let salesMsgs = [];
 let purchMsgs = [];
 let salesIdx = 0;
@@ -286,12 +346,11 @@ const num = new Intl.NumberFormat('en-US');
 google.charts.load('current', {'packages':['corechart', 'bar']});
 google.charts.setOnLoadCallback(() => loadData());
 
-// Auto Refresh cada 30 min
 setInterval(() => { loadData(); }, 30 * 60 * 1000);
 
 function loadData() {
   document.getElementById('syncLoader').style.display = 'block';
-  document.getElementById('syncText').innerText = "Conectando con el Servidor API...";
+  document.getElementById('syncText').innerText = "Conectando con Servidor Central...";
   document.getElementById('syncStatus').style.background = "#fef9c3";
   document.getElementById('syncStatus').style.color = "#ca8a04";
   document.getElementById('syncStatus').style.borderColor = "#fde047";
@@ -301,9 +360,7 @@ function loadData() {
       if (!response.ok) throw new Error("Error en la red");
       return response.json();
     })
-    .then(data => {
-      initApp(data);
-    })
+    .then(data => { initApp(data); })
     .catch(err => {
       console.error(err);
       document.getElementById('syncLoader').style.display = 'none';
@@ -316,7 +373,8 @@ function loadData() {
 function initApp(res) {
   document.getElementById('syncLoader').style.display = 'none';
   const now = new Date();
-  document.getElementById('syncText').innerText = `Servidor Online (Última carga: ${now.toLocaleTimeString()})`;
+  document.getElementById('syncText').innerText = `Sistema Sincronizado`;
+  document.getElementById('update-status').innerText = `Última actualización: ${now.toLocaleTimeString()} (Auto-refresh 30m)`;
   document.getElementById('syncStatus').style.background = "#dcfce7";
   document.getElementById('syncStatus').style.color = "#16a34a";
   document.getElementById('syncStatus').style.borderColor = "#bbf7d0";
@@ -387,11 +445,8 @@ function updateDashboard() {
   document.getElementById('matrixPrice').innerHTML = "";
 
   let v=0, m=0, c=0, costoVendido=0, fugaTotal=0;
-  const vendedores = {};
-  const clientes = {};
-  const freq = {};
-  const flujoMensual = {};
-  const marcasRentabilidad = {};
+  const vendedores = {}; const clientes = {}; const freq = {};
+  const flujoMensual = {}; const marcasRentabilidad = {};
 
   filteredData.forEach(r => {
     v += r.ventasMonto; m += r.ventasMargen; costoVendido += r.ventasCosto; c += r.compraTotalMonto; 
@@ -449,7 +504,6 @@ function updateDashboard() {
   }, 100);
 }
 
-// ================= CARRUSEL IA =================
 function startCarousels() {
   clearInterval(salesInterval); clearInterval(purchInterval);
   renderSalesMsg(); renderPurchMsg();
@@ -482,7 +536,7 @@ function generatePurchasingAI() {
   if(subidas.length > 0) purchMsgs.push(`📉 <b>Alerta de Costos:</b> <b>${subidas.length} productos</b> subieron de precio. El más crítico es <b>${subidas[0].codigo}</b> (+${(subidas[0].localCambioPct * 100).toFixed(1)}%).`);
   const bajadas = filteredData.filter(r => r.localCambioPct < -0.05).sort((a,b) => a.localCambioPct - b.localCambioPct);
   if(bajadas.length > 0) purchMsgs.push(`✅ <b>Oportunidad:</b> <b>${bajadas.length} productos</b> bajaron de costo local. Excelente para stockear repuestos de 'Alta Salida'.`);
-  if(subidas.length === 0 && bajadas.length === 0) purchMsgs.push(`⚖️ <b>Estabilidad:</b> Los costos locales se mantienen estables. Usa la 'Matriz de Precios' para elegir el <span style="color:#22c55e; font-weight:bold;">VERDE</span>.`);
+  if(subidas.length === 0 && bajadas.length === 0) purchMsgs.push(`⚖️ <b>Estabilidad:</b> Los costos locales se mantienen estables. Usa la 'Matriz de Precios' para elegir el <span style="color:#10b981; font-weight:bold;">VERDE</span>.`);
 }
 
 function renderSalesMsg() {
@@ -505,41 +559,42 @@ function nextPurchMsg() { purchIdx = (purchIdx + 1) % purchMsgs.length; renderPu
 function prevPurchMsg() { purchIdx = (purchIdx - 1 + purchMsgs.length) % purchMsgs.length; renderPurchMsg(); clearInterval(purchInterval); purchInterval = setInterval(nextPurchMsg, 15000); }
 function goPurch(i) { purchIdx = i; renderPurchMsg(); clearInterval(purchInterval); purchInterval = setInterval(nextPurchMsg, 15000); }
 
-// ================= GRÁFICOS NIVEL DIOS =================
 function drawCharts(vendedores, clientes, freq, flujoMensual, marcasRentabilidad) {
+  const chartColors = ['#111827', '#f59e0b', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6'];
+  
   if(Object.keys(flujoMensual).length > 0) {
     const dtFlujo = new google.visualization.DataTable();
     dtFlujo.addColumn('string', 'Mes'); dtFlujo.addColumn('number', 'Ingresos'); dtFlujo.addColumn('number', 'Gastos');
     Object.keys(flujoMensual).sort().forEach(k => dtFlujo.addRow([k, flujoMensual[k].ventas, flujoMensual[k].compras]));
-    new google.visualization.ColumnChart(document.getElementById('chartFlujo')).draw(dtFlujo, {legend: {position:'bottom'}, colors:['#3b82f6', '#ef4444'], chartArea:{width:'85%', height:'70%'}, vAxis:{format:'short'}});
+    new google.visualization.ColumnChart(document.getElementById('chartFlujo')).draw(dtFlujo, {legend: {position:'bottom'}, colors:['#111827', '#f59e0b'], chartArea:{width:'85%', height:'70%'}, vAxis:{format:'short'}});
   } else { document.getElementById('chartFlujo').innerHTML = "<p class='center'>Sin datos de flujo.</p>"; }
 
   if(Object.keys(marcasRentabilidad).length > 0) {
     const dtMarcas = new google.visualization.DataTable();
     dtMarcas.addColumn('string', 'Marca'); dtMarcas.addColumn('number', 'Ganancia Neta');
     Object.entries(marcasRentabilidad).sort((a,b)=>b[1]-a[1]).forEach(x => dtMarcas.addRow(x));
-    new google.visualization.PieChart(document.getElementById('chartMarcas')).draw(dtMarcas, {pieHole: 0.4, legend: {position:'right'}, chartArea:{width:'90%', height:'80%'}});
+    new google.visualization.PieChart(document.getElementById('chartMarcas')).draw(dtMarcas, {pieHole: 0.4, colors: chartColors, legend: {position:'right'}, chartArea:{width:'90%', height:'80%'}});
   } else { document.getElementById('chartMarcas').innerHTML = "<p class='center'>Sin datos de margen positivo.</p>"; }
 
   if(Object.keys(clientes).length > 0) {
     const dtCli = new google.visualization.DataTable();
     dtCli.addColumn('string', 'Cliente'); dtCli.addColumn('number', 'Compras');
     Object.entries(clientes).sort((a,b)=>b[1]-a[1]).slice(0,5).forEach(x => dtCli.addRow(x));
-    new google.visualization.BarChart(document.getElementById('chartClientes')).draw(dtCli, {legend:'none', colors:['#14b8a6'], chartArea:{width:'70%', height:'80%'}});
+    new google.visualization.BarChart(document.getElementById('chartClientes')).draw(dtCli, {legend:'none', colors:['#111827'], chartArea:{width:'70%', height:'80%'}});
   }
   
   if(Object.keys(vendedores).length > 0) {
     const dt1 = new google.visualization.DataTable();
     dt1.addColumn('string', 'Vendedor'); dt1.addColumn('number', 'Ventas');
     Object.entries(vendedores).sort((a,b)=>b[1]-a[1]).slice(0,5).forEach(x => dt1.addRow(x));
-    new google.visualization.BarChart(document.getElementById('chartVendedores')).draw(dt1, {legend:'none', colors:['#3b82f6'], chartArea:{width:'70%', height:'80%'}});
+    new google.visualization.BarChart(document.getElementById('chartVendedores')).draw(dt1, {legend:'none', colors:['#f59e0b'], chartArea:{width:'70%', height:'80%'}});
   }
   
   if(Object.keys(freq).length > 0) {
     const dt2 = new google.visualization.DataTable();
     dt2.addColumn('string', 'SKU'); dt2.addColumn('number', 'Veces Comprado');
     Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,10).forEach(x => dt2.addRow(x));
-    new google.visualization.BarChart(document.getElementById('chartFrecuencia')).draw(dt2, {legend:'none', colors:['#8b5cf6'], chartArea:{width:'70%', height:'80%'}});
+    new google.visualization.BarChart(document.getElementById('chartFrecuencia')).draw(dt2, {legend:'none', colors:['#3b82f6'], chartArea:{width:'70%', height:'80%'}});
   }
 }
 
@@ -555,7 +610,7 @@ function renderMainTable() {
   filteredData.slice(0, 150).forEach(r => {
     let estFactorBadge = r.estadoFactor === 'BAJO' ? `<span class="badge semaforo-rojo">BAJO</span>` : `<span class="badge semaforo-verde">OK</span>`;
     html += `<tr class="row-clickable" onclick="showDetail('${r.codigo}')">
-      <td><strong>${r.codigo}</strong></td><td>${r.marca}</td><td class="center text-muted">$${r.precioCompraProm.toFixed(2)}</td><td class="center"><strong>x${r.factor.toFixed(2)}</strong></td><td class="center text-blue">$${r.precioSugerido.toFixed(2)}</td><td class="center" style="font-weight:bold;">$${r.precioVentaProm.toFixed(2)}</td><td class="center">${estFactorBadge}</td><td class="right">$${num.format(r.ventasMonto.toFixed(2))}</td><td class="right ${r.ventasMargen >= 0 ? 'text-green' : 'text-red'}">$${num.format(r.ventasMargen.toFixed(2))}</td><td class="center"><span class="badge ${getSemaforoClass(r.salidaProducto)}">${r.salidaProducto}</span></td>
+      <td><strong>${r.codigo}</strong></td><td>${r.marca}</td><td class="center text-muted">$${r.precioCompraProm.toFixed(2)}</td><td class="center"><strong>x${r.factor.toFixed(2)}</strong></td><td class="center text-blue">$${r.precioSugerido.toFixed(2)}</td><td class="center" style="font-weight:bold;">$${r.precioVentaProm.toFixed(2)}</td><td class="center">${estFactorBadge}</td><td class="right" style="color:var(--primary); font-weight:bold;">$${num.format(r.ventasMonto.toFixed(2))}</td><td class="right ${r.ventasMargen >= 0 ? 'text-green' : 'text-red'}">$${num.format(r.ventasMargen.toFixed(2))}</td><td class="center"><span class="badge ${getSemaforoClass(r.salidaProducto)}">${r.salidaProducto}</span></td>
     </tr>`;
   });
   document.getElementById('tablaMain').innerHTML = html;
@@ -724,7 +779,7 @@ function showPriceHistory(codigo, proveedor) {
 
   if(chartData.length > 1) {
       let dataTable = google.visualization.arrayToDataTable(chartData);
-      let options = { legend: 'none', colors: ['#10b981'], chartArea: {width: '85%', height: '70%'}, hAxis: { textStyle: {fontSize: 10} }, vAxis: { format: 'currency', textStyle: {fontSize: 10} }, pointSize: 6, lineWidth: 3, curveType: 'function' };
+      let options = { legend: 'none', colors: ['#f59e0b'], chartArea: {width: '85%', height: '70%'}, hAxis: { textStyle: {fontSize: 10} }, vAxis: { format: 'currency', textStyle: {fontSize: 10} }, pointSize: 6, lineWidth: 3, curveType: 'function' };
       new google.visualization.LineChart(document.getElementById('priceHistoryChart')).draw(dataTable, options);
   } else { document.getElementById('priceHistoryChart').innerHTML = "<p style='text-align:center; padding: 20px; color:#64748b;'>Solo hay 1 compra, historial insuficiente para gráfica.</p>"; }
 }
