@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Gerente Nivel Dios 🚀</title>
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+
+  <style>
+    :root {
+      --primary: #0f172a; --secondary: #3b82f6; --bg: #f8fafc; --card-bg: #ffffff;
+      --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0;
+    }
+    body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text-main); padding: 15px; margin: 0; font-size: 13px; }
+    h1, h2, h3 { margin: 0; }
+    h1 { color: var(--primary); font-size: 24px;}
+    
+    .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+    
+    .sync-badge { background: #dcfce7; color: #16a34a; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; border: 1px solid #bbf7d0; display: flex; align-items: center; gap: 5px; }
+    .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 14px; height: 14px; animation: spin 1s linear infinite; display: none; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    .manager-box { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 15px 20px; border-radius: 10px; display: flex; gap: 15px; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .manager-box-purchasing { background: linear-gradient(135deg, #064e3b, #022c22); }
+    .manager-avatar { font-size: 40px; }
+    .manager-text { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden;}
+    .manager-text h3 { color: #60a5fa; margin-bottom: 5px; font-size: 16px; }
+    .manager-box-purchasing .manager-text h3 { color: #34d399; }
+    
+    .carousel-container { display: flex; align-items: center; gap: 10px; width: 100%;}
+    .carousel-btn { background: rgba(255,255,255,0.1); border: none; color: white; font-size: 16px; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; padding:0; flex-shrink: 0;}
+    .carousel-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
+    .carousel-content { flex: 1; font-size: 14px; line-height: 1.5; color: #cbd5e1; min-height: 42px; display: flex; align-items: center;}
+    
+    .carousel-indicators { display: flex; justify-content: center; gap: 5px; margin-top: 8px; }
+    .dot { width: 8px; height: 8px; background: rgba(255,255,255,0.2); border-radius: 50%; cursor: pointer; transition: 0.3s;}
+    .dot.active { background: #60a5fa; transform: scale(1.2); }
+    .manager-box-purchasing .dot.active { background: #34d399; }
+    .highlight { color: #fbbf24; font-weight: bold; }
+
+    .filters-bar { background: var(--card-bg); padding: 15px; border-radius: 8px; display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); align-items: center; }
+    .filters-bar select, .filters-bar input { padding: 8px; border: 1px solid var(--border); border-radius: 5px; font-size: 13px; min-width: 140px; }
+    
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .grid-large { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .card { background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px;}
+    .card h2 { font-size: 16px; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-bottom: 10px; }
+    
+    .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 15px; }
+    .kpi { background: #f1f5f9; padding: 15px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.05); position:relative;}
+    .kpi h3 { font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px;}
+    .kpi p { font-size: 20px; font-weight: bold; margin: 0; color: var(--primary); }
+
+    .table-container { overflow-x: auto; background: var(--card-bg); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-height: 400px; }
+    thead { position: sticky; top: 0; z-index: 2; background: #e2e8f0; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th, td { border-bottom: 1px solid var(--border); padding: 8px 10px; text-align: left; }
+    th { color: var(--text-main); font-weight: 600; text-transform: uppercase; font-size: 10px; background: #f8fafc;}
+    
+    .row-clickable { cursor: pointer; transition: 0.2s; }
+    .row-clickable:hover { background-color: #e0e7ff !important; box-shadow: inset 4px 0 0 #3b82f6; }
+    
+    .center { text-align: center; } .right { text-align: right; }
+    .text-green { color: #16a34a !important; font-weight: bold; } .text-red { color: #dc2626 !important; font-weight: bold; } .text-blue { color: #2563eb !important; font-weight: bold;}
+    
+    .badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; display: inline-block;}
+    .semaforo-verde { background: #22c55e !important; color: white !important; }
+    .semaforo-amarillo { background: #eab308 !important; color: black !important; }
+    .semaforo-rojo { background: #ef4444 !important; color: white !important; }
+    .badge-gray { background: #f1f5f9; color: #475569; }
+
+    .popup-panel { display: none; border: 2px solid #3b82f6; animation: slideIn 0.3s ease-out; background: #f8fafc; margin-bottom:20px;}
+    @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .matrix-cell { text-align: center; font-weight: bold; border-right: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s;}
+    .matrix-cell:hover { transform: scale(1.05); box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+    .qty-high { background: #dbeafe; color: #1e3a8a; } .qty-mid { background: #f1f5f9; color: #475569; }
+    
+    #table-loader { text-align:center; padding: 20px; color: #3b82f6; font-weight:bold; display:none; }
+    .price-insight-box { background: #ecfdf5; border-left: 4px solid #10b981; padding: 10px 15px; border-radius: 0 6px 6px 0; margin-bottom: 15px; color: #064e3b; font-size: 13px;}
+  </style>
+</head>
+<body>
+
+<div class="header-container">
+  <div>
+    <h1>Dashboard Nivel Dios 🚀</h1>
+  </div>
+  <div>
+    <div class="sync-badge" id="syncStatus">
+      <div class="loader" id="syncLoader"></div>
+      <span id="syncText">Iniciando sistema...</span>
+    </div>
+  </div>
+</div>
+
+<!-- IA MANAGER: VENTAS -->
+<div class="manager-box">
+  <div class="manager-avatar">🧑‍💼</div>
+  <div class="manager-text">
+    <h3>Análisis Ejecutivo (Finanzas y Flujo de Caja)</h3>
+    <div class="carousel-container">
+      <button class="carousel-btn" onclick="prevSalesMsg()">&#10094;</button>
+      <div class="carousel-content" id="ai-sales-text">Generando insights financieros...</div>
+      <button class="carousel-btn" onclick="nextSalesMsg()">&#10095;</button>
+    </div>
+    <div class="carousel-indicators" id="ai-sales-dots"></div>
+  </div>
+</div>
+
+<!-- FILTROS GLOBALES -->
+<div class="filters-bar">
+  <strong>Filtros:</strong>
+  <input type="text" id="fSearch" placeholder="🔍 Buscar SKU o Marca..." oninput="applyFilters()">
+  <select id="fAnio" onchange="applyFilters()"><option value="">Todos los Años</option></select>
+  <select id="fMes" onchange="applyFilters()">
+    <option value="">Todos los Meses</option>
+    <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+    <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
+    <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
+    <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+  </select>
+  <select id="fMarca" onchange="applyFilters()"><option value="">Todas las Marcas</option></select>
+  <select id="fVendedor" onchange="applyFilters()"><option value="">Todos los Vendedores</option></select>
+  <select id="fProveedor" onchange="applyFilters()"><option value="">Todos los Proveedores</option></select>
+</div>
+
+<!-- KPIS Y GRAFICOS -->
+<div class="card">
+  <h2>Estado de Resultados (Resumen Financiero)</h2>
+  <div class="kpis">
+    <div class="kpi" style="border-left: 4px solid #3b82f6;">
+      <h3 title="Todo el dinero que ingresó por ventas">1. Ingresos (Ventas)</h3>
+      <p id="kpiVentas" class="text-blue">$0.00</p>
+    </div>
+    <div class="kpi" style="border-left: 4px solid #ef4444;">
+      <h3 title="Cuánto nos costó originalmente lo que ya vendimos">2. Costo de lo Vendido</h3>
+      <p id="kpiCostoVendido" class="text-red">-$0.00</p>
+    </div>
+    <div class="kpi" style="background: #ecfdf5; border-color: #10b981; border-left: 4px solid #10b981;">
+      <h3 title="Resta de Ingresos menos Costo (Dinero limpio)">3. Ganancia Real (1 menos 2)</h3>
+      <p id="kpiMargen" class="text-green">$0.00</p>
+    </div>
+    <div class="kpi" style="background: #fffbeb; border-color: #f59e0b; border-left: 4px solid #f59e0b;">
+      <h3 title="Dinero gastado en comprar mercadería para el almacén">Inversión en Almacén (Stock)</h3>
+      <p id="kpiCompras">$0.00</p>
+    </div>
+    <div class="kpi" style="background: #fef2f2; border-color: #ef4444; border-left: 4px solid #ef4444;">
+      <h3 title="Dinero perdido por aplicar descuentos debajo del factor estratégico">🚨 Fuga de Ganancias</h3>
+      <p id="kpiFuga" class="text-red">-$0.00</p>
+    </div>
+  </div>
+</div>
+
+<div class="grid-large">
+  <div class="card">
+    <h2>📊 Flujo de Caja (Ingresos vs Compras)</h2>
+    <div id="chartFlujo" style="height:250px;"></div>
+  </div>
+  <div class="card">
+    <h2>🍩 Rentabilidad Neta por Marca</h2>
+    <div id="chartMarcas" style="height:250px;"></div>
+  </div>
+</div>
+
+<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+  <div class="card">
+    <h2>🥇 Top 5 Clientes (Ingresos)</h2>
+    <div id="chartClientes" style="height:200px;"></div>
+  </div>
+  <div class="card">
+    <h2>💼 Top 5 Vendedores</h2>
+    <div id="chartVendedores" style="height:200px;"></div>
+  </div>
+  <div class="card">
+    <h2>🔄 Top Frecuencia de Compra</h2>
+    <div id="chartFrecuencia" style="height:200px;"></div>
+  </div>
+</div>
+
+<div id="table-loader">Procesando miles de registros para las tablas... ⏳</div>
+
+<!-- PANEL DETALLE DÍA POR DÍA DE VENTAS -->
+<div class="card popup-panel" id="detailPanel">
+  <div class="header-container" style="border-bottom: 1px solid #cbd5e1; padding-bottom: 10px;">
+    <h2 id="detailTitle" style="color: #1e3a8a;">🔍 Historial Diario de: [SKU]</h2>
+    <button style="background: #ef4444; border:none; padding: 5px 10px; border-radius: 4px; color:white; font-weight:bold; cursor:pointer;" onclick="document.getElementById('detailPanel').style.display='none'">X Cerrar Panel</button>
+  </div>
+  <div class="table-container" style="max-height: 250px; margin-top: 10px; box-shadow: none; border: 1px solid #cbd5e1;">
+    <table>
+      <thead>
+        <tr><th>Fecha Exacta</th><th>Vendedor</th><th class="center">Cant. Vendida</th><th class="right" style="background:#fee2e2;">Costo Unit. (Base)</th><th class="center" style="background:#fefce8;">Factor Aplicado</th><th class="right" style="background:#dcfce7;">P. Venta Real</th><th class="right">Total Facturado</th><th class="right">Ganancia Neta</th></tr>
+      </thead>
+      <tbody id="detailTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TABLA 1: ANALISIS DE FACTOR Y PRECIOS -->
+<div class="card">
+  <h2>Análisis de Factores y Rentabilidad <i>(Haz clic en una fila para ver el detalle de días)</i></h2>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr><th>Código</th><th>Marca</th><th class="center" style="background:#eef2ff;">P. Compra<br>Promedio (Sin IGV)</th><th class="center" style="background:#fefce8;">Factor<br>Esperado</th><th class="center" style="background:#eef2ff;">P. Sugerido<br>(Meta)</th><th class="center" style="background:#f0fdf4;">P. Venta<br>Real Prom.</th><th class="center">Estado<br>Margen</th><th class="right">Ventas ($)</th><th class="right">Ganancia ($)</th><th class="center">Diagnóstico</th></tr>
+      </thead>
+      <tbody id="tablaMain"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- IA MANAGER: COMPRAS -->
+<div class="manager-box manager-box-purchasing">
+  <div class="manager-avatar">🛒</div>
+  <div class="manager-text">
+    <h3>Análisis Estratégico de Compras (IA)</h3>
+    <div class="carousel-container">
+      <button class="carousel-btn" onclick="prevPurchMsg()">&#10094;</button>
+      <div class="carousel-content" id="ai-purch-text">Generando insights de adquisiciones...</div>
+      <button class="carousel-btn" onclick="nextPurchMsg()">&#10095;</button>
+    </div>
+    <div class="carousel-indicators" id="ai-purch-dots"></div>
+  </div>
+</div>
+
+<!-- PANEL DETALLE DE PRECIOS PROVEEDOR -->
+<div class="card popup-panel" id="priceDetailPanel">
+  <div class="header-container" style="border-bottom: 1px solid #cbd5e1; padding-bottom: 10px;">
+    <h2 id="priceDetailTitle" style="color: #064e3b;">💸 Análisis de Costo Local: [SKU] - [PROV]</h2>
+    <button style="background: #ef4444; border:none; padding: 5px 10px; border-radius: 4px; color:white; font-weight:bold; cursor:pointer;" onclick="document.getElementById('priceDetailPanel').style.display='none'">X Cerrar Panel</button>
+  </div>
+  <div class="price-insight-box" id="priceAiInsight">Cargando análisis histórico...</div>
+  <div id="priceHistoryChart" style="height: 180px; width: 100%; margin-bottom: 15px;"></div>
+  <div class="table-container" style="max-height: 200px; box-shadow: none; border: 1px solid #cbd5e1;">
+    <table>
+      <thead><tr><th>Fecha de Compra</th><th class="center">Cantidad Comprada</th><th class="right">Precio Pagado (US$)</th><th class="center">Variación vs Mes Anterior</th></tr></thead>
+      <tbody id="priceDetailBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- PANEL DETALLE DESTINO CLIENTES -->
+<div class="card popup-panel" id="clientDetailPanel">
+  <div class="header-container" style="border-bottom: 1px solid #cbd5e1; padding-bottom: 10px;">
+    <h2 id="clientDetailTitle" style="color: #1e3a8a;">📦 Destino de la mercadería: [SKU]</h2>
+    <button style="background: #ef4444; border:none; padding: 5px 10px; border-radius: 4px; color:white; font-weight:bold; cursor:pointer;" onclick="document.getElementById('clientDetailPanel').style.display='none'">X Cerrar Panel</button>
+  </div>
+  <div class="table-container" style="max-height: 250px; margin-top: 10px; box-shadow: none; border: 1px solid #cbd5e1;">
+    <table>
+      <thead><tr><th>Fecha Venta</th><th>Nombre del Cliente</th><th>Grupo del Cliente</th><th class="center">Cantidad Entregada</th></tr></thead>
+      <tbody id="clientDetailBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="grid" style="grid-template-columns: 1fr;">
+  <div class="card">
+    <h2>Matriz de Adquisición (Cantidades compradas) <i>*Clic en el Total para ver a qué Clientes se vendió*</i></h2>
+    <div class="table-container"><table id="matrixQty"></table></div>
+  </div>
+  <div class="card">
+    <h2>Matriz de Precios (Último Costo) <i>*Clic en un precio para analizar la estacionalidad del proveedor*</i></h2>
+    <div class="table-container"><table id="matrixPrice"></table></div>
+  </div>
+</div>
+
+<script>
+// AQUI ESTA TU API EXACTA DE GOOGLE APPS SCRIPT
+const API_URL = "https://script.google.com/macros/s/AKfycbxj0cSk26mWhP6_UXMOGaGp6Fv7txzcg0VXx6ligPORP5pmUu2KdJGbpdT8q0iO1GZTJQ/exec";
+
+let allData = [];
+let filteredData = [];
+let filterOptions = {};
+
+// Variables de IA Carrusel
+let salesMsgs = [];
+let purchMsgs = [];
+let salesIdx = 0;
+let purchIdx = 0;
+let salesInterval, purchInterval;
+
+const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+const num = new Intl.NumberFormat('en-US');
+
+google.charts.load('current', {'packages':['corechart', 'bar']});
+google.charts.setOnLoadCallback(() => loadData());
+
+// Auto Refresh cada 30 min
+setInterval(() => { loadData(); }, 30 * 60 * 1000);
+
+function loadData() {
+  document.getElementById('syncLoader').style.display = 'block';
+  document.getElementById('syncText').innerText = "Conectando con el Servidor API...";
+  document.getElementById('syncStatus').style.background = "#fef9c3";
+  document.getElementById('syncStatus').style.color = "#ca8a04";
+  document.getElementById('syncStatus').style.borderColor = "#fde047";
+  
+  fetch(API_URL)
+    .then(response => {
+      if (!response.ok) throw new Error("Error en la red");
+      return response.json();
+    })
+    .then(data => {
+      initApp(data);
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById('syncLoader').style.display = 'none';
+      document.getElementById('syncText').innerText = "Error de Conexión. Reintentando...";
+      document.getElementById('syncStatus').style.background = "#fee2e2";
+      document.getElementById('syncStatus').style.color = "#dc2626";
+    });
+}
+
+function initApp(res) {
+  document.getElementById('syncLoader').style.display = 'none';
+  const now = new Date();
+  document.getElementById('syncText').innerText = `Servidor Online (Última carga: ${now.toLocaleTimeString()})`;
+  document.getElementById('syncStatus').style.background = "#dcfce7";
+  document.getElementById('syncStatus').style.color = "#16a34a";
+  document.getElementById('syncStatus').style.borderColor = "#bbf7d0";
+
+  if (!res.success) { alert("Error del servidor: " + res.message); return; }
+  
+  allData = res.unifiedRows;
+  filterOptions = res.summary.filterOptions;
+  
+  const selMarca = document.getElementById('fMarca').value;
+  const selVend = document.getElementById('fVendedor').value;
+  const selAnio = document.getElementById('fAnio').value;
+  const selProv = document.getElementById('fProveedor').value;
+
+  populateSelect('fMarca', filterOptions.marcas);
+  populateSelect('fVendedor', filterOptions.vendedores);
+  populateSelect('fAnio', filterOptions.anios);
+
+  let provs = new Set();
+  allData.forEach(r => { (r.proveedores||"").split(',').forEach(p => { if(p.trim()) provs.add(p.trim()); }); });
+  populateSelect('fProveedor', [...provs].sort());
+
+  if(selMarca) document.getElementById('fMarca').value = selMarca;
+  if(selVend) document.getElementById('fVendedor').value = selVend;
+  if(selAnio) document.getElementById('fAnio').value = selAnio;
+  if(selProv) document.getElementById('fProveedor').value = selProv;
+
+  applyFilters();
+}
+
+function populateSelect(id, array) {
+  const sel = document.getElementById(id);
+  while (sel.options.length > 1) { sel.remove(1); }
+  array.forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item; opt.innerText = item;
+    sel.appendChild(opt);
+  });
+}
+
+function applyFilters() {
+  const qBusqueda = document.getElementById('fSearch').value.toUpperCase();
+  const qMarca = document.getElementById('fMarca').value;
+  const qVendedor = document.getElementById('fVendedor').value;
+  const qProv = document.getElementById('fProveedor').value;
+  const qAnio = document.getElementById('fAnio').value;
+  const qMes = document.getElementById('fMes').value;
+
+  filteredData = allData.filter(r => {
+    let match = true;
+    if(qBusqueda && !r.codigo.includes(qBusqueda) && !r.marca.toUpperCase().includes(qBusqueda)) match = false;
+    if(qMarca && r.marca !== qMarca) match = false;
+    if(qVendedor && !(r.vendedoresVenta||"").includes(qVendedor)) match = false;
+    if(qProv && !(r.proveedores||"").includes(qProv)) match = false;
+    if(qAnio && !(r.aniosDisponibles||[]).includes(Number(qAnio))) match = false;
+    if(qMes && !(r.mesesDisponibles||[]).includes(Number(qMes))) match = false;
+    return match;
+  });
+
+  filteredData.sort((a,b) => b.ventasMonto - a.ventasMonto);
+  updateDashboard();
+}
+
+function updateDashboard() {
+  document.getElementById('table-loader').style.display = 'block';
+  document.getElementById('tablaMain').innerHTML = "";
+  document.getElementById('matrixQty').innerHTML = "";
+  document.getElementById('matrixPrice').innerHTML = "";
+
+  let v=0, m=0, c=0, costoVendido=0, fugaTotal=0;
+  const vendedores = {};
+  const clientes = {};
+  const freq = {};
+  const flujoMensual = {};
+  const marcasRentabilidad = {};
+
+  filteredData.forEach(r => {
+    v += r.ventasMonto; m += r.ventasMargen; costoVendido += r.ventasCosto; c += r.compraTotalMonto; 
+    
+    if(r.ventasCantidad > 0 && r.estadoFactor === 'BAJO') {
+        const fugaItem = (r.precioSugerido - r.precioVentaProm) * r.ventasCantidad;
+        if(fugaItem > 0) fugaTotal += fugaItem;
+    }
+
+    if(r.ventasMargen > 0) marcasRentabilidad[r.marca] = (marcasRentabilidad[r.marca] || 0) + r.ventasMargen;
+
+    (r.detalleVentas || []).forEach(vnt => {
+      const vx = (vnt.vendedor || "SIN ASIGNAR").trim();
+      vendedores[vx] = (vendedores[vx]||0) + vnt.montoTotal;
+      const cx = (vnt.cliente || "MOSTRADOR").trim();
+      clientes[cx] = (clientes[cx]||0) + vnt.montoTotal;
+      
+      if(vnt.anio && vnt.mes) {
+          const key = `${vnt.anio}-${String(vnt.mes).padStart(2, '0')}`;
+          if(!flujoMensual[key]) flujoMensual[key] = { ventas: 0, compras: 0 };
+          flujoMensual[key].ventas += vnt.montoTotal;
+      }
+    });
+    
+    freq[r.codigo] = r.detalleCompras.length;
+    
+    (r.detalleCompras || []).forEach(cmp => {
+        if(cmp.anio && cmp.mes) {
+            const key = `${cmp.anio}-${String(cmp.mes).padStart(2, '0')}`;
+            if(!flujoMensual[key]) flujoMensual[key] = { ventas: 0, compras: 0 };
+            flujoMensual[key].compras += cmp.total;
+        }
+    });
+  });
+
+  document.getElementById('kpiVentas').innerText = money.format(v);
+  document.getElementById('kpiCostoVendido').innerText = "-" + money.format(costoVendido);
+  document.getElementById('kpiMargen').innerText = money.format(m);
+  document.getElementById('kpiCompras').innerText = money.format(c);
+  document.getElementById('kpiFuga').innerText = "-" + money.format(fugaTotal);
+
+  try { generateSalesAI(v, costoVendido, m, fugaTotal, vendedores); } catch(e){}
+  try { generatePurchasingAI(); } catch(e){}
+  try { drawCharts(vendedores, clientes, freq, flujoMensual, marcasRentabilidad); } catch(e){}
+
+  setTimeout(() => {
+    try { renderMainTable(); } catch(e){}
+    setTimeout(() => {
+      try { renderQtyMatrix(); } catch(e){}
+      setTimeout(() => {
+        try { renderPriceMatrix(); } catch(e){}
+        document.getElementById('table-loader').style.display = 'none'; 
+      }, 50);
+    }, 50);
+  }, 100);
+}
+
+// ================= CARRUSEL IA =================
+function startCarousels() {
+  clearInterval(salesInterval); clearInterval(purchInterval);
+  renderSalesMsg(); renderPurchMsg();
+  salesInterval = setInterval(nextSalesMsg, 15000);
+  purchInterval = setInterval(nextPurchMsg, 15000);
+}
+
+function generateSalesAI(v, costo, m, fuga, vendedores) {
+  salesMsgs = []; salesIdx = 0;
+  if(filteredData.length === 0) { salesMsgs.push("No hay datos para analizar."); return startCarousels(); }
+
+  const rentabilidad = v > 0 ? ((m / v) * 100).toFixed(1) : 0;
+  salesMsgs.push(`💡 <b>Resumen Financiero:</b> Ingresos de <span class="highlight">${money.format(v)}</span>. Costo de lo vendido: ${money.format(costo)}. Ganancia neta: <span class="highlight">${money.format(m)}</span> (Rentabilidad: ${rentabilidad}%).`);
+  if(fuga > 0) salesMsgs.push(`🚨 <b>Fuga de Ganancias:</b> Hemos perdido <b>${money.format(fuga)}</b> por aplicar descuentos debajo del factor multiplicador estratégico. Auditar urgentemente.`);
+  const stockVendido = filteredData.filter(r => r.salidaProducto === 'VENTA POR STOCK');
+  if(stockVendido.length > 0) salesMsgs.push(`🔥 <b>Oportunidad:</b> <b>${stockVendido.length} ítems vendidos por STOCK</b> (sin compra reciente). Sugiero re-comprar para no quebrar inventario.`);
+  const topVendors = Object.entries(vendedores).sort((a,b)=>b[1]-a[1]);
+  if(topVendors.length > 0) salesMsgs.push(`🏆 <b>Equipo:</b> El mejor vendedor es <b>${topVendors[0][0]}</b> con <span class="highlight">${money.format(topVendors[0][1])}</span> facturados.`);
+
+  startCarousels();
+}
+
+function generatePurchasingAI() {
+  purchMsgs = []; purchIdx = 0;
+  if(filteredData.length === 0) { purchMsgs.push("No hay compras para analizar."); return; }
+
+  const estancados = filteredData.filter(r => r.salidaProducto === 'SIN SALIDA' || r.salidaProducto === 'ESTANCADO');
+  if(estancados.length > 0) purchMsgs.push(`🚨 <b>Capital Inmovilizado:</b> <b>${estancados.length} ítems estancados</b>. Frenar adquisiciones de estos SKUs inmediatamente.`);
+  const subidas = filteredData.filter(r => r.localCambioPct > 0.05).sort((a,b) => b.localCambioPct - a.localCambioPct);
+  if(subidas.length > 0) purchMsgs.push(`📉 <b>Alerta de Costos:</b> <b>${subidas.length} productos</b> subieron de precio. El más crítico es <b>${subidas[0].codigo}</b> (+${(subidas[0].localCambioPct * 100).toFixed(1)}%).`);
+  const bajadas = filteredData.filter(r => r.localCambioPct < -0.05).sort((a,b) => a.localCambioPct - b.localCambioPct);
+  if(bajadas.length > 0) purchMsgs.push(`✅ <b>Oportunidad:</b> <b>${bajadas.length} productos</b> bajaron de costo local. Excelente para stockear repuestos de 'Alta Salida'.`);
+  if(subidas.length === 0 && bajadas.length === 0) purchMsgs.push(`⚖️ <b>Estabilidad:</b> Los costos locales se mantienen estables. Usa la 'Matriz de Precios' para elegir el <span style="color:#22c55e; font-weight:bold;">VERDE</span>.`);
+}
+
+function renderSalesMsg() {
+  document.getElementById('ai-sales-text').innerHTML = salesMsgs[salesIdx] || "...";
+  let dots = "";
+  for(let i=0; i<salesMsgs.length; i++) dots += `<div class="dot ${i===salesIdx?'active':''}" onclick="goSales(${i})"></div>`;
+  document.getElementById('ai-sales-dots').innerHTML = dots;
+}
+function nextSalesMsg() { salesIdx = (salesIdx + 1) % salesMsgs.length; renderSalesMsg(); clearInterval(salesInterval); salesInterval = setInterval(nextSalesMsg, 15000); }
+function prevSalesMsg() { salesIdx = (salesIdx - 1 + salesMsgs.length) % salesMsgs.length; renderSalesMsg(); clearInterval(salesInterval); salesInterval = setInterval(nextSalesMsg, 15000); }
+function goSales(i) { salesIdx = i; renderSalesMsg(); clearInterval(salesInterval); salesInterval = setInterval(nextSalesMsg, 15000); }
+
+function renderPurchMsg() {
+  document.getElementById('ai-purch-text').innerHTML = purchMsgs[purchIdx] || "...";
+  let dots = "";
+  for(let i=0; i<purchMsgs.length; i++) dots += `<div class="dot ${i===purchIdx?'active':''}" onclick="goPurch(${i})"></div>`;
+  document.getElementById('ai-purch-dots').innerHTML = dots;
+}
+function nextPurchMsg() { purchIdx = (purchIdx + 1) % purchMsgs.length; renderPurchMsg(); clearInterval(purchInterval); purchInterval = setInterval(nextPurchMsg, 15000); }
+function prevPurchMsg() { purchIdx = (purchIdx - 1 + purchMsgs.length) % purchMsgs.length; renderPurchMsg(); clearInterval(purchInterval); purchInterval = setInterval(nextPurchMsg, 15000); }
+function goPurch(i) { purchIdx = i; renderPurchMsg(); clearInterval(purchInterval); purchInterval = setInterval(nextPurchMsg, 15000); }
+
+// ================= GRÁFICOS NIVEL DIOS =================
+function drawCharts(vendedores, clientes, freq, flujoMensual, marcasRentabilidad) {
+  if(Object.keys(flujoMensual).length > 0) {
+    const dtFlujo = new google.visualization.DataTable();
+    dtFlujo.addColumn('string', 'Mes'); dtFlujo.addColumn('number', 'Ingresos'); dtFlujo.addColumn('number', 'Gastos');
+    Object.keys(flujoMensual).sort().forEach(k => dtFlujo.addRow([k, flujoMensual[k].ventas, flujoMensual[k].compras]));
+    new google.visualization.ColumnChart(document.getElementById('chartFlujo')).draw(dtFlujo, {legend: {position:'bottom'}, colors:['#3b82f6', '#ef4444'], chartArea:{width:'85%', height:'70%'}, vAxis:{format:'short'}});
+  } else { document.getElementById('chartFlujo').innerHTML = "<p class='center'>Sin datos de flujo.</p>"; }
+
+  if(Object.keys(marcasRentabilidad).length > 0) {
+    const dtMarcas = new google.visualization.DataTable();
+    dtMarcas.addColumn('string', 'Marca'); dtMarcas.addColumn('number', 'Ganancia Neta');
+    Object.entries(marcasRentabilidad).sort((a,b)=>b[1]-a[1]).forEach(x => dtMarcas.addRow(x));
+    new google.visualization.PieChart(document.getElementById('chartMarcas')).draw(dtMarcas, {pieHole: 0.4, legend: {position:'right'}, chartArea:{width:'90%', height:'80%'}});
+  } else { document.getElementById('chartMarcas').innerHTML = "<p class='center'>Sin datos de margen positivo.</p>"; }
+
+  if(Object.keys(clientes).length > 0) {
+    const dtCli = new google.visualization.DataTable();
+    dtCli.addColumn('string', 'Cliente'); dtCli.addColumn('number', 'Compras');
+    Object.entries(clientes).sort((a,b)=>b[1]-a[1]).slice(0,5).forEach(x => dtCli.addRow(x));
+    new google.visualization.BarChart(document.getElementById('chartClientes')).draw(dtCli, {legend:'none', colors:['#14b8a6'], chartArea:{width:'70%', height:'80%'}});
+  }
+  
+  if(Object.keys(vendedores).length > 0) {
+    const dt1 = new google.visualization.DataTable();
+    dt1.addColumn('string', 'Vendedor'); dt1.addColumn('number', 'Ventas');
+    Object.entries(vendedores).sort((a,b)=>b[1]-a[1]).slice(0,5).forEach(x => dt1.addRow(x));
+    new google.visualization.BarChart(document.getElementById('chartVendedores')).draw(dt1, {legend:'none', colors:['#3b82f6'], chartArea:{width:'70%', height:'80%'}});
+  }
+  
+  if(Object.keys(freq).length > 0) {
+    const dt2 = new google.visualization.DataTable();
+    dt2.addColumn('string', 'SKU'); dt2.addColumn('number', 'Veces Comprado');
+    Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,10).forEach(x => dt2.addRow(x));
+    new google.visualization.BarChart(document.getElementById('chartFrecuencia')).draw(dt2, {legend:'none', colors:['#8b5cf6'], chartArea:{width:'70%', height:'80%'}});
+  }
+}
+
+function getSemaforoClass(d) {
+  if (d === 'ALTA SALIDA') return 'semaforo-verde';
+  if (d === 'VENTA POR STOCK' || d === 'SALIDA MEDIA' || d === 'SALIDA LENTA') return 'semaforo-amarillo';
+  if (d === 'SIN MOVIMIENTO' || d === 'SIN SALIDA' || d === 'ESTANCADO') return 'semaforo-rojo';
+  return 'badge-gray';
+}
+
+function renderMainTable() {
+  let html = "";
+  filteredData.slice(0, 150).forEach(r => {
+    let estFactorBadge = r.estadoFactor === 'BAJO' ? `<span class="badge semaforo-rojo">BAJO</span>` : `<span class="badge semaforo-verde">OK</span>`;
+    html += `<tr class="row-clickable" onclick="showDetail('${r.codigo}')">
+      <td><strong>${r.codigo}</strong></td><td>${r.marca}</td><td class="center text-muted">$${r.precioCompraProm.toFixed(2)}</td><td class="center"><strong>x${r.factor.toFixed(2)}</strong></td><td class="center text-blue">$${r.precioSugerido.toFixed(2)}</td><td class="center" style="font-weight:bold;">$${r.precioVentaProm.toFixed(2)}</td><td class="center">${estFactorBadge}</td><td class="right">$${num.format(r.ventasMonto.toFixed(2))}</td><td class="right ${r.ventasMargen >= 0 ? 'text-green' : 'text-red'}">$${num.format(r.ventasMargen.toFixed(2))}</td><td class="center"><span class="badge ${getSemaforoClass(r.salidaProducto)}">${r.salidaProducto}</span></td>
+    </tr>`;
+  });
+  document.getElementById('tablaMain').innerHTML = html;
+}
+
+function showDetail(codigo) {
+  const item = filteredData.find(x => x.codigo === codigo);
+  if(!item) return;
+  document.getElementById('detailTitle').innerHTML = `🔍 Historial Diario de Ventas: <b>${item.codigo}</b>`;
+  let html = "";
+  (item.detalleVentas || []).forEach(v => {
+    const factorReal = v.costoUnitario > 0 ? (v.precioUnitario / v.costoUnitario) : 0;
+    html += `<tr><td>${v.fecha||'N/A'}</td><td>${v.vendedor}</td><td class="center">${v.cantidad}</td><td class="right">$${v.costoUnitario.toFixed(2)}</td><td class="center">x${factorReal.toFixed(2)}</td><td class="right text-blue">$${v.precioUnitario.toFixed(2)}</td><td class="right">$${v.montoTotal.toFixed(2)}</td><td class="right ${v.margen >= 0 ? 'text-green':'text-red'}">$${v.margen.toFixed(2)}</td></tr>`;
+  });
+  document.getElementById('detailTableBody').innerHTML = html || `<tr><td colspan="8" class="center">No hay ventas registradas.</td></tr>`;
+  document.getElementById('detailPanel').style.display = 'block';
+  document.getElementById('detailPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function renderQtyMatrix() {
+  const qProv = document.getElementById('fProveedor').value;
+  let provs = new Set();
+  let matrix = {};
+
+  filteredData.forEach(r => {
+    matrix[r.codigo] = { marca: r.marca, total: 0, p: {} };
+    (r.detalleCompras || []).filter(d => d.tipo === 'LOCAL').forEach(d => {
+      const p = (d.proveedor || "").trim();
+      if(p) {
+        if(qProv && p !== qProv) return; 
+        provs.add(p);
+        matrix[r.codigo].p[p] = (matrix[r.codigo].p[p] || 0) + d.cantidad;
+        matrix[r.codigo].total += d.cantidad;
+      }
+    });
+  });
+
+  let pArr = [...provs].sort();
+  let codes = Object.keys(matrix).filter(c => matrix[c].total > 0).slice(0, 100);
+
+  let html = `<thead><tr><th>Código SKU</th><th>Marca</th>`;
+  pArr.forEach(p => html += `<th>${p.substring(0,10)}...</th>`);
+  html += `<th>Total Comprado (Clic)</th></tr></thead><tbody>`;
+
+  codes.forEach(c => {
+    html += `<tr><td><strong>${c}</strong></td><td>${matrix[c].marca}</td>`;
+    pArr.forEach(p => {
+      const qty = matrix[c].p[p] || 0;
+      html += `<td class="matrix-cell ${qty>0?'qty-mid':''}">${qty > 0 ? num.format(qty) : '-'}</td>`;
+    });
+    html += `<td class="matrix-cell semaforo-amarillo" onclick="showClientDetail('${c}')" style="cursor:pointer;" title="Clic para ver clientes">${num.format(matrix[c].total)} 🛒</td></tr>`;
+  });
+  document.getElementById('matrixQty').innerHTML = html;
+}
+
+function showClientDetail(codigo) {
+  const item = filteredData.find(x => x.codigo === codigo);
+  if(!item) return;
+  document.getElementById('clientDetailTitle').innerHTML = `📦 Destino de la mercadería: <b>${item.codigo}</b>`;
+  let html = "";
+  const sales = item.detalleVentas || [];
+  if(sales.length === 0) {
+    html = `<tr><td colspan="4" class="center">Este producto no registra ventas aún (Quedó en stock).</td></tr>`;
+  } else {
+    sales.forEach(v => {
+      const clienteStr = v.cliente || 'CLIENTE MOSTRADOR';
+      const grupoStr = v.grupoCliente || 'SIN GRUPO';
+      html += `<tr><td>${v.fecha || 'Sin fecha'}</td><td><strong>${clienteStr}</strong></td><td><span class="badge badge-gray">${grupoStr}</span></td><td class="center" style="font-weight:bold; color:#1e3a8a;">${v.cantidad} unds.</td></tr>`;
+    });
+  }
+  document.getElementById('clientDetailBody').innerHTML = html;
+  document.getElementById('clientDetailPanel').style.display = 'block';
+  document.getElementById('clientDetailPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function renderPriceMatrix() {
+  const qProv = document.getElementById('fProveedor').value;
+  let provs = new Set();
+  let matrix = {};
+
+  filteredData.forEach(r => {
+    matrix[r.codigo] = { marca: r.marca, p: {} };
+    (r.detalleCompras || []).filter(d => d.tipo === 'LOCAL').forEach(d => {
+      const p = (d.proveedor || "").trim();
+      if(p) {
+        if(qProv && p !== qProv) return; 
+        provs.add(p);
+        if(!matrix[r.codigo].p[p] || String(d.fecha) > String(matrix[r.codigo].p[p].fecha)) {
+           matrix[r.codigo].p[p] = { precio: Number(d.precioUnitario || 0), fecha: d.fecha };
+        }
+      }
+    });
+  });
+
+  let pArr = [...provs].sort();
+  let codes = Object.keys(matrix).filter(c => Object.keys(matrix[c].p).length > 0).slice(0, 100);
+
+  let html = `<thead><tr><th>Código SKU</th><th>Marca</th>`;
+  pArr.forEach(p => html += `<th>${p.substring(0,10)}...</th>`);
+  html += `</tr></thead><tbody>`;
+
+  codes.forEach(c => {
+    html += `<tr><td><strong>${c}</strong></td><td>${matrix[c].marca}</td>`;
+    let prices = [];
+    pArr.forEach(p => { if(matrix[c].p[p] && matrix[c].p[p].precio > 0) prices.push(matrix[c].p[p].precio); });
+    prices.sort((a,b) => a - b);
+    let minP = prices[0] || 0; let maxP = prices[prices.length - 1] || 0;
+
+    pArr.forEach(p => {
+      const val = matrix[c].p[p] ? matrix[c].p[p].precio : 0;
+      let cls = "matrix-cell text-muted";
+      let displayVal = "-";
+
+      if(val > 0) {
+        displayVal = "$" + val.toFixed(2);
+        if(val === minP) cls = "matrix-cell semaforo-verde"; 
+        else if(val === maxP && prices.length > 1) cls = "matrix-cell semaforo-rojo"; 
+        else cls = "matrix-cell semaforo-amarillo"; 
+        html += `<td class="${cls}" onclick="showPriceHistory('${c}', '${p}')" title="Ver análisis histórico">${displayVal}</td>`;
+      } else {
+        html += `<td class="${cls}">-</td>`;
+      }
+    });
+    html += `</tr>`;
+  });
+  document.getElementById('matrixPrice').innerHTML = html;
+}
+
+function showPriceHistory(codigo, proveedor) {
+  const item = filteredData.find(x => x.codigo === codigo);
+  if(!item) return;
+
+  document.getElementById('priceDetailTitle').innerHTML = `💸 Análisis de Costo Local: <b>${codigo}</b> con <b>${proveedor}</b>`;
+  let history = item.detalleCompras.filter(d => d.tipo === 'LOCAL' && d.proveedor === proveedor);
+  history.sort((a,b) => String(a.fecha).localeCompare(String(b.fecha)));
+
+  if(history.length === 0) return;
+
+  let html = "";
+  let lastPrice = 0; let minPrice = Infinity; let minDate = "";
+  let chartData = [['Fecha', 'Costo Unitario (US$)']];
+
+  history.forEach((h) => {
+    let varHtml = `<span class="badge badge-gray">0%</span>`;
+    if (lastPrice > 0) {
+        const diff = (h.precioUnitario - lastPrice) / lastPrice;
+        if(diff > 0.02) varHtml = `<span class="badge semaforo-rojo">▲ +${(diff*100).toFixed(1)}%</span>`;
+        else if(diff < -0.02) varHtml = `<span class="badge semaforo-verde">▼ ${(diff*100).toFixed(1)}%</span>`;
+    }
+    if(h.precioUnitario < minPrice && h.precioUnitario > 0) { minPrice = h.precioUnitario; minDate = h.fecha || 'N/A'; }
+    lastPrice = h.precioUnitario;
+    chartData.push([h.fecha || 'N/A', h.precioUnitario]);
+    html = `<tr><td>${h.fecha || 'Sin fecha'}</td><td class="center">${h.cantidad}</td><td class="right" style="font-weight:bold; color:#064e3b;">$${h.precioUnitario.toFixed(2)}</td><td class="center">${varHtml}</td></tr>` + html;
+  });
+
+  let insight = `🤖 <b>Análisis de Estacionalidad:</b> El mejor precio histórico fue de <b>$${minPrice.toFixed(2)}</b> el <b>${minDate}</b>. `;
+  if (lastPrice > minPrice) insight += `Actualmente estás pagando un <b><span style="color:#ef4444">${(((lastPrice - minPrice) / minPrice) * 100).toFixed(1)}% más caro</span></b> que su mejor momento histórico.`;
+  else insight += `¡Actualmente le estás comprando a este proveedor al <b>mejor precio histórico</b>!`;
+
+  document.getElementById('priceAiInsight').innerHTML = insight;
+  document.getElementById('priceDetailBody').innerHTML = html;
+  
+  const panel = document.getElementById('priceDetailPanel');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  if(chartData.length > 1) {
+      let dataTable = google.visualization.arrayToDataTable(chartData);
+      let options = { legend: 'none', colors: ['#10b981'], chartArea: {width: '85%', height: '70%'}, hAxis: { textStyle: {fontSize: 10} }, vAxis: { format: 'currency', textStyle: {fontSize: 10} }, pointSize: 6, lineWidth: 3, curveType: 'function' };
+      new google.visualization.LineChart(document.getElementById('priceHistoryChart')).draw(dataTable, options);
+  } else { document.getElementById('priceHistoryChart').innerHTML = "<p style='text-align:center; padding: 20px; color:#64748b;'>Solo hay 1 compra, historial insuficiente para gráfica.</p>"; }
+}
+</script>
+</body>
+</html>
